@@ -7,8 +7,11 @@ function likelyhood = predictGenresBasedOnPrefModels(preferenceModels, item, use
 	%likelyhood =  ones(5, Ngenres) / Ngenres;
     %likelyhood = [P_UinC; P_UinC; P_UinC; P_UinC; P_UinC];
     likelyhood = priorProb;
+     
     for r = 1:Nrates
+        figure(r), hold on; title(['A rating model for the raiting ' num2str(r) ' estiamted based on the item ' num2str(item)]);
         usersRated = find(userRatings(2,:) == r);
+        color_delta(r,:) = [1 1 1] / length(usersRated);
         %figure, hold on; title(['Users that rated this movie as ' num2str(r)]);
         for u = 1:length(usersRated) %plot dynamicaly how likelyhood changes
             preferenceModel = preferenceModels(usersRated(u), :, r);
@@ -25,10 +28,13 @@ function likelyhood = predictGenresBasedOnPrefModels(preferenceModels, item, use
             if(numberOfNotRatedCategories > 0) 
                 ratedCategories = find(preferenceModel ~= 0);
                 normParam =  noRatredProb * numberOfNotRatedCategories / (Ngenres - numberOfNotRatedCategories);
-                preferenceModel(ratedCategories) = preferenceModel(ratedCategories) - normParam;
                 preferenceModel(notRatedCategories) = noRatredProb; % replace with a small probability
+                preferenceModel = preferenceModel / sum(preferenceModel);
+                
             end
-            likelyhood(r,:) = likelyhood(r,:) .* preferenceModel; 
+            likelyhood(r,:) = likelyhood(r,:) .* preferenceModel;
+            u
+            figure(r),plot(likelyhood(r,:)/sum(likelyhood(r,:)), 'color', 1 - u * color_delta(r,:));
         end
     end
 end
