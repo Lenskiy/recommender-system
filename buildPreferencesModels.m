@@ -5,7 +5,7 @@ function p_UiRatedCkasK = buildPreferencesModels(R, G);
     Nitems = size(R,2);     %number of items
     Ngenres = size(G,2);    %number of genres
     Nrates = max(max(R));   %number of rates
-
+    p_UiRatedCkasK(Nusers, Ngenres, Nrates) = 0; %pre-allocated memory
     for i = 1:Nusers
        ratedItems = find(R(i,:) > 0); % indexes of items that were rated by user i
        NratedItems = length(ratedItems); %number of rated items by user i
@@ -16,9 +16,11 @@ function p_UiRatedCkasK = buildPreferencesModels(R, G);
            for r = 1:Nrates
                 ratingsHistByiInCk(r) = length(find(ratedItemsByiInCk == r)); % calculate the histogram
            end  
-           if(sum(ratingsHistByiInCk) == 0) continue; end;%<--- should not be like this
-           p_UiRatedCkasK(i, k, :) = ratingsHistByiInCk / sum(ratingsHistByiInCk); %/Nitems;
+           ratingsHistByiInCk = ratingsHistByiInCk + ones(1, Nrates); % Applied Laplace's law to avoid the zero-frequency problem
+           %if(sum(ratingsHistByiInCk) == 0) continue; end;%<--- should not be like this
+           p_UiRatedCkasK(i, k, :) = ratingsHistByiInCk / (length(ratedItemsByiInCk) + Nrates); % Nrates is added in denomerator (see Laplace's law)
        end
+       
        for j = 1:Nrates
            s = sum(p_UiRatedCkasK(i,:,j));
            if s ~= 0

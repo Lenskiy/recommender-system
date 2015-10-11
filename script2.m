@@ -61,6 +61,9 @@ for k = 1:Nrates
     plot(p_UiRatedCkasK(u, :, k), 'color', colors(k, :));
 end
 
+
+%priorProb =  ones(Nrates, Ngenres); % no prior information is given i.e. all categories are equaly probable.
+%Use prior information
 priorProb = zeros(Nrates, Ngenres);
 for k = 1:Nrates
     for i = 1:size(p_UiRatedCkasK,1)
@@ -70,14 +73,14 @@ for k = 1:Nrates
 end
 priorProb = priorProb ./ (ones(19,1) * sum(priorProb'))';
     
-priorProb =  ones(Nrates, Ngenres); % no prior information is given i.e. all categories are equaly probable.
+
 
  % simulate prediction of an item's category N times for different sets of
  % items that are used for training
-N = 10;
+N = 20;
 portionTesting = 0.1; % size of a testing test is (portionTesting * Nitems)
 %category prediction is made using preference models estimated based on items ranked as r
-r = 1; 
+r = 5; 
 for j = 1:N
     training_subset_ind = floor(rand(Nitems - round(Nitems * portionTesting), 1) * Nitems) + 1;
     testing_subset_ind = floor(rand(round(Nitems * portionTesting), 1) * Nitems) + 1;
@@ -95,10 +98,11 @@ for j = 1:N
         likelyhood = predictGenresBasedOnPrefModels(p_UiRatedCkasK, i, userRatings, priorProb);
         [max_val estimated_category] = max(likelyhood(r,:));
         true_categories = find (G(i,:) ~= 0);
-        if(isempty(intersect(estimated_category, true_categories)))
+        if(~isempty(intersect(estimated_category, true_categories)))
             counter_correct_prediction(j) = counter_correct_prediction(j) + 1;
         end
     end    
 end
 
 category_prediction_rate = counter_correct_prediction/length(testing_subset_ind)
+[mean(category_prediction_rate) std(category_prediction_rate)]
