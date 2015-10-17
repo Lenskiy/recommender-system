@@ -1,5 +1,11 @@
 load('R_G.mat');
 
+
+Nusers = size(R,1);     %number of users
+Nitems = size(R,2);     %number of items
+Ncategories = size(G,2);    %number of genres
+Nrates = max(max(R));   %number of rates
+    
 %[Pr_ItemInCategory Pr_Item Pr_Category] = buildBernoulliModel(R, G);
 
 %Pr_CategoryGivenI = estimatePosteriorProbability(Pr_ItemInCategory, Pr_Item, Pr_Category);
@@ -11,7 +17,7 @@ load('R_G.mat');
 N = 20;
 portionTesting = 0.1; % size of a testing test is (portionTesting * Nitems)
 %category prediction is made using preference models estimated based on items ranked as r
-r = 5; 
+%r = 1; 
 for j = 1:N
     training_subset_ind = floor(rand(Nitems - round(Nitems * portionTesting), 1) * Nitems) + 1;
     testing_subset_ind = floor(rand(round(Nitems * portionTesting), 1) * Nitems) + 1;
@@ -20,7 +26,12 @@ for j = 1:N
     j
     Pr_CategoryGivenI = estimatePosteriorProbability(Pr_ItemInCategory, Pr_Item, Pr_Category);
     for i = 1:length(testing_subset_ind)
-        [max_val estimated_category] = max(Pr_CategoryGivenI(i,:,r));
+         %figure, hold on;
+        for k = 1:Nrates
+            %plot(Pr_CategoryGivenI(i,:,k));
+            likelyhood(k, :) = Pr_CategoryGivenI(i,:,k);
+        end
+        [max_val estimated_category] = max(prod(likelyhood));
         true_categories = find (G(i,:) ~= 0);
         %likelyhood_norm = likelyhood ./ (ones(5,1) * sum(likelyhood));
         %combined_likelyhood = sum(likelyhood_norm .* (ones(19,1) * [1 2 3 4 5])');
