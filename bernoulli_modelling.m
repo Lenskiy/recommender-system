@@ -25,7 +25,7 @@ Rnum(4) = length(find(R == 4));
 Rnum(5) = length(find(R == 5));
  % simulate prediction of an item's category N times for different sets of
  % items that are used for training
-N = 10;
+N = 5;
 portionTesting = 0.1; % size of a testing test is (portionTesting * Nitems)
 %category prediction is made using preference models estimated based on items ranked as r
 r = 5; 
@@ -50,7 +50,7 @@ for j = 1:N
         [max_val estimated_category] = max(prod(likelihood));  %./ (ones(1,Ngenres)' * Rnum)'
         %[votes estimated_category] = max(hist(estimated_category, unique(estimated_category)));
         true_categories = find (G(i,:) ~= 0);
-        counter_similar_prediction = counter_similar_prediction + ...
+        counter_similar_prediction(j) = counter_similar_prediction(j) + ...
             (length(find(G_cor(true_categories, estimated_category) > cor_th)) > 0);
         %likelihood_norm = likelihood ./ (ones(5,1) * sum(likelihood));
         %combined_likelihood = sum(likelihood_norm .* (ones(19,1) * [1 2 3 4 5])');
