@@ -22,6 +22,7 @@ N = 20;
 portionTesting = 0.1; % size of a testing test is (portionTesting * Nitems)
 %category prediction is made using preference models estimated based on items ranked as r
 r = 5; 
+clear counter_correct_prediction;
 for j = 1:N
     training_subset_ind = floor(rand(Nitems - round(Nitems * portionTesting), 1) * Nitems) + 1;
     testing_subset_ind = floor(rand(round(Nitems * portionTesting), 1) * Nitems) + 1;
@@ -49,4 +50,4 @@ for j = 1:N
 end
 
 category_prediction_rate = counter_correct_prediction/length(testing_subset_ind)
-[mean(category_prediction_rate) std(category_prediction_rate)]
+prediction = [mean(category_prediction_rate) std(category_prediction_rate)]
