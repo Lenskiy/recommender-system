@@ -6,7 +6,7 @@ function [Pr_ItemInCategory Pr_Item Pr_Category] = buildBernoulliModel(R, G)
     Nrates = max(max(R));   %number of rates
 
     %Prior probability of a category
-    Pr_Category = sum(G) / sum(sum(G)); % should be devided by Nitems, but item can belong to more than one categories
+    Pr_Category = sum(G) / Nitems; %sum(sum(G)); % should be devided by Nitems, but item can belong to more than one categories
     
     %figure, plot(Pr_Category); xlabel('Category C_j');  ylabel('P(C_j)');
     
@@ -51,6 +51,4 @@ function [Pr_ItemInCategory Pr_Item Pr_Category] = buildBernoulliModel(R, G)
             Pr_Item(i,r) = sum(Pr_Category .* Pr_ItemInCategory(i, :, r));
         end
     end
-
-
 end
