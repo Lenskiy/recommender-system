@@ -73,36 +73,74 @@ for k = 1:Nrates
 end
 priorProb = priorProb ./ (ones(19,1) * sum(priorProb'))';
     
-
+G_norm = (G - ones(size(G,1),1) * mean(G));
+G_norm = G_norm ./ (ones(size(G,1),1) * std(G));
+G_cor = (G_norm' * G_norm) / Nitems;
+G_cor(logical(eye(size(G_cor)))) = 0;
+imagesc(G_cor);
+colorbar;
+ax = gca;
+ax.XTick = [1:19];
+ax.YTick = [1:19];
+ax.XTickLabel = movie_genre;
+ax.YTickLabel = movie_genre;
+set(gca, 'XTickLabelRotation', 45)
 
  % simulate prediction of an item's category N times for different sets of
  % items that are used for training
-N = 20;
-portionTesting = 0.1; % size of a testing test is (portionTesting * Nitems)
+N = 2;
+r = 5;
+portion_step = 0.05;
+category_prediction_rate_array(19,2) = 0;
+prediction_incl_similar_array(19,2) = 0;
+for t =  1:19
+    t
+    portionTesting = t*portion_step; % size of a testing test is (portionTesting * Nitems)
 %category prediction is made using preference models estimated based on items ranked as r
-r = 5; 
-for j = 1:N
-    training_subset_ind = floor(rand(Nitems - round(Nitems * portionTesting), 1) * Nitems) + 1;
-    testing_subset_ind = floor(rand(round(Nitems * portionTesting), 1) * Nitems) + 1;
-    p_UiRatedCkasK = buildPreferencesModels(R(:, training_subset_ind), G(training_subset_ind, :));
-    counter_correct_prediction(j) = 0;
-    j
-    for i = 1:length(testing_subset_ind)
-        %i
-        clear userRatings;
-        usersRated_idx = find(R(:, testing_subset_ind(i)) > 0);
-        userRatings(1,:) = usersRated_idx;
-        for k = 1:length(usersRated_idx)
-            userRatings(2, k) =  R(usersRated_idx(k), testing_subset_ind(i));
-        end
-        likelyhood = predictGenresBasedOnPrefModels(p_UiRatedCkasK, i, userRatings, priorProb);
-        [max_val estimated_category] = max(likelyhood(r,:));
-        true_categories = find (G(i,:) ~= 0);
-        if(~isempty(intersect(estimated_category, true_categories)))
-            counter_correct_prediction(j) = counter_correct_prediction(j) + 1;
-        end
-    end    
+    
+    %r = 5; 
+    cor_th = 0.2;
+    N = 5
+    clear counter_correct_prediction
+    clear counter_similar_prediction;
+    for j = 1:N
+        training_subset_ind = floor(rand(Nitems - round(Nitems * portionTesting), 1) * Nitems) + 1;
+        testing_subset_ind = floor(rand(round(Nitems * portionTesting), 1) * Nitems) + 1;
+        p_UiRatedCkasK = buildPreferencesModels(R(:, training_subset_ind), G(training_subset_ind, :));
+        counter_correct_prediction(j) = 0;
+        counter_similar_prediction(j) = 0;
+        j
+        for i = 1:length(testing_subset_ind)
+            %i
+            clear userRatings;
+            usersRated_idx = find(R(:, testing_subset_ind(i)) > 0);
+            userRatings(1,:) = usersRated_idx;
+            for k = 1:length(usersRated_idx)
+                userRatings(2, k) =  R(usersRated_idx(k), testing_subset_ind(i));
+            end
+            likelihood = predictGenresBasedOnPrefModels(p_UiRatedCkasK, testing_subset_ind(i), userRatings, priorProb);
+            %[max_val estimated_category] = max(likelihood(r,:));
+            [max_val estimated_category] = max(prod(likelihood)); 
+            counter_similar_prediction = counter_similar_prediction + ...
+                (length(find(G_cor(true_categories, estimated_category) > cor_th)) > 0);
+
+            %likelyhood_norm = likelyhood ./ (ones(5,1) * sum(likelyhood));
+            %combined_likelyhood = sum(likelyhood_norm .* (ones(19,1) * [1 2 3 4 5])');
+            %[max_val estimated_category] = max(combined_likelyhood);
+            true_categories = find (G(i,:) ~= 0);
+            if(~isempty(intersect(estimated_category, true_categories)))
+                counter_correct_prediction(j) = counter_correct_prediction(j) + 1;
+            end
+        end    
+    end
+
+    category_prediction_rate = counter_correct_prediction/length(testing_subset_ind)
+    category_prediction_ratec_array(t,:) = [mean(category_prediction_rate) std(category_prediction_rate)];
+
+    category_prediction_rate_inc_similar = (counter_correct_prediction + counter_similar_prediction) /length(testing_subset_ind)
+    prediction_incl_similar_array(t, :) = [mean(category_prediction_rate_inc_similar) std(category_prediction_rate_inc_similar)];
 end
 
-category_prediction_rate = counter_correct_prediction/length(testing_subset_ind)
-[mean(category_prediction_rate) std(category_prediction_rate)]
+likelyhood_norm = likelihood ./ (ones(5,1) * sum(likelihood))
+
+combined_likelyhood = sum(likelyhood_norm .* (ones(19,1) * [1 2 3 4 5])');

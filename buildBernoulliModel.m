@@ -28,7 +28,8 @@ function [Pr_ItemInCategory Pr_Item Pr_Category] = buildBernoulliModel(R, G)
             end
         end
     end
-
+    % user = 4; rate = 5;
+    % figure, plot(Pr_UinC(4,:,5))
     % for r = 1 : Nrates
     %     figure, surf(Pr_UinC(:, :, r)); ylabel('users'); xlabel('category');
     % end
@@ -38,8 +39,9 @@ function [Pr_ItemInCategory Pr_Item Pr_Category] = buildBernoulliModel(R, G)
     for r = 1:Nrates
         for c = 1:Ncategories
             for i = 1:Nitems
-                Pr_ItemInCategory(i, c, r) =  prod(Rn(:,i,r) .* Pr_UinC(:,c,r) +...
-                                           + (1 - Rn(:,i,r)) .* (1 - Pr_UinC(:,c,r)));
+%                 Pr_ItemInCategory(i, c, r) =  prod(Rn(:,i,r) .* Pr_UinC(:,c,r) +...
+%                                            + (1 - Rn(:,i,r)) .* (1 - Pr_UinC(:,c,r)));
+                Pr_ItemInCategory(i, c, r) =  prod(Pr_UinC(:,c,r).^Rn(:,i,r) .* (1 - Pr_UinC(:,c,r)).^(1 - Rn(:,i,r)));
             end
         end
     end

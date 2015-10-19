@@ -9,7 +9,7 @@ function p_UiRatedCkasK = buildPreferencesModels(R, G);
     for i = 1:Nusers
        ratedItems = find(R(i,:) > 0); % indexes of items that were rated by user i
        NratedItems = length(ratedItems); %number of rated items by user i
-       for k = 1:Ngenres
+       for k = 2:Ngenres
            itemsIndexesRatedBy_iInCK = find(G(ratedItems,k) > 0); % item indexes rated by a user i that belong to category k
            ratedItemsByiInCk = R(i,ratedItems(itemsIndexesRatedBy_iInCK)); % ratings of the rated items
            %length(find(ratedItemsByiInCk == 0)) > 0; %<--- should be always false

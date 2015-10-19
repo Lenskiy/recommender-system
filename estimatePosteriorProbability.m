@@ -8,5 +8,6 @@ function Pr_CategoryGivenI = estimatePosteriorProbability(Pr_ItemInCategory, Pr_
         for i = 1:Nitems
             Pr_CategoryGivenI(i, :, r) =  Pr_Category .* Pr_ItemInCategory(i, :, r) ./ Pr_Item(i,r);
         end
+        Pr_CategoryGivenI(i,isnan(Pr_CategoryGivenI(i,:,r)), r) = 0;
     end
 end
