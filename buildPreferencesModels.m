@@ -11,6 +11,7 @@ function p_UiRatedCkasK = buildPreferencesModels(R, G);
        NratedItems = length(ratedItems); %number of rated items by user i
        for k = 2:Ngenres
            itemsIndexesRatedBy_iInCK = find(G(ratedItems,k) > 0); % item indexes rated by a user i that belong to category k
+           if(isempty(itemsIndexesRatedBy_iInCK)) continue; end;
            ratedItemsByiInCk = R(i,ratedItems(itemsIndexesRatedBy_iInCK)); % ratings of the rated items
            %length(find(ratedItemsByiInCk == 0)) > 0; %<--- should be always false
            for r = 1:Nrates

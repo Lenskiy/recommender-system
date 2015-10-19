@@ -88,7 +88,7 @@ set(gca, 'XTickLabelRotation', 45)
 
  % simulate prediction of an item's category N times for different sets of
  % items that are used for training
-N = 2;
+N = 10;
 r = 5;
 portion_step = 0.05;
 category_prediction_rate_array(19,2) = 0;
@@ -100,7 +100,6 @@ for t =  1:19
     
     %r = 5; 
     cor_th = 0.2;
-    N = 5
     clear counter_correct_prediction
     clear counter_similar_prediction;
     for j = 1:N
@@ -121,13 +120,13 @@ for t =  1:19
             likelihood = predictGenresBasedOnPrefModels(p_UiRatedCkasK, testing_subset_ind(i), userRatings, priorProb);
             %[max_val estimated_category] = max(likelihood(r,:));
             [max_val estimated_category] = max(prod(likelihood)); 
-            counter_similar_prediction = counter_similar_prediction + ...
-                (length(find(G_cor(true_categories, estimated_category) > cor_th)) > 0);
 
             %likelyhood_norm = likelyhood ./ (ones(5,1) * sum(likelyhood));
             %combined_likelyhood = sum(likelyhood_norm .* (ones(19,1) * [1 2 3 4 5])');
             %[max_val estimated_category] = max(combined_likelyhood);
             true_categories = find (G(i,:) ~= 0);
+            counter_similar_prediction(j) = counter_similar_prediction(j) + ...
+                (length(find(G_cor(true_categories, estimated_category) > cor_th)) > 0);
             if(~isempty(intersect(estimated_category, true_categories)))
                 counter_correct_prediction(j) = counter_correct_prediction(j) + 1;
             end
@@ -140,6 +139,14 @@ for t =  1:19
     category_prediction_rate_inc_similar = (counter_correct_prediction + counter_similar_prediction) /length(testing_subset_ind)
     prediction_incl_similar_array(t, :) = [mean(category_prediction_rate_inc_similar) std(category_prediction_rate_inc_similar)];
 end
+figure, errorbar(category_prediction_ratec_array(:,1), category_prediction_ratec_array(:,2)), hold on;
+errorbar(prediction_incl_similar_array(:,1), prediction_incl_similar_array(:,2), 'r'), hold on;
+xlabel('Precentage the total data used for training')
+ylabel('Correct prediction')
+ax = gca;
+ax.XTick = [1:19];
+ax.XTickLabel = [(1 - (1:19) * portion_step) * 100];
+
 
 likelyhood_norm = likelihood ./ (ones(5,1) * sum(likelihood))
 
