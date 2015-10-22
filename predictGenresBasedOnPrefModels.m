@@ -6,7 +6,7 @@ function likelyhood = predictGenresBasedOnPrefModels(preferenceModels, item, use
     %P_UinC = sum(G) / sum(sum(G)); %Nusers;   %prior probabilities
 	%likelyhood =  ones(5, Ngenres) / Ngenres;
     %likelyhood = [P_UinC; P_UinC; P_UinC; P_UinC; P_UinC];
-    likelyhood = priorProb;
+    likelihood = log(priorProb);
      
     for r = 1:Nrates
         %figure(r), hold on; title(['A rating model for the raiting ' num2str(r) ' estiamted based on the item ' num2str(item)]);
@@ -32,7 +32,7 @@ function likelyhood = predictGenresBasedOnPrefModels(preferenceModels, item, use
 %                 preferenceModel = preferenceModel / sum(preferenceModel);
 %                 
 %             end
-            likelyhood(r,:) = likelyhood(r,:) .* preferenceModel;
+            likelihood(r,:) = likelihood(r,:) + log(preferenceModel);
             %figure(r),plot(likelyhood(r,:)/sum(likelyhood(r,:)), 'color', 1 - u * color_delta(r,:));
         end
     end

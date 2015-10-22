@@ -16,6 +16,8 @@ function p_UiRatedCkasK = buildPreferencesModels(R, G);
            %length(find(ratedItemsByiInCk == 0)) > 0; %<--- should be always false
            for r = 1:Nrates
                 ratingsHistByiInCk(r) = length(find(ratedItemsByiInCk == r)); % calculate the histogram
+                %ratingsHistByiInCk(r) = ratingsHistByiInCk(r) + 1;
+                %p_UiRatedCkasK(i, k, r) = ratingsHistByiInCk(r) / (Nitems + 2); % Applied Laplace's law to avoid the zero-frequency
            end  
            ratingsHistByiInCk = ratingsHistByiInCk + ones(1, Nrates); % Applied Laplace's law to avoid the zero-frequency problem
            %if(sum(ratingsHistByiInCk) == 0) continue; end;%<--- should not be like this
