@@ -2,18 +2,9 @@ load('R_G.mat');
 
 unknown_items = find(G(:,1) == 1);
 
-Rt1 = R(:,1 : unknown_items(1) - 1);
-Rt2 = R(:,unknown_items(1)+1 : unknown_items(2)-1);
-Rt3 = R(:,unknown_items(2)+1 : end);
-R = [Rt1 Rt2 Rt3];
-
-G = G(:, 2:19);
-Gt1 = G(1 : unknown_items(1) - 1, :);
-Gt2 = G(unknown_items(1)+1 : unknown_items(2)-1, :);
-Gt3 = G(unknown_items(2)+1 : end ,:);
-
-G = [Gt1; Gt2; Gt3];
-
+R(:, unknown_items) = [];
+G(unknown_items, :) = [];
+G(:, 1) = [];
 
 
 Nusers = size(R,1);     %number of users
@@ -38,8 +29,8 @@ G_cor(logical(eye(size(G_cor)))) = 0;
 imagesc(G_cor);
 colorbar;
 ax = gca;
-ax.XTick = [1:19];
-ax.YTick = [1:19];
+ax.XTick = [1:Ncategories];
+ax.YTick = [1:Ncategories];
 ax.XTickLabel = movie_genre;
 ax.YTickLabel = movie_genre;
 set(gca, 'XTickLabelRotation', 45)
@@ -57,20 +48,23 @@ N = 2;
 portion_step = 0.05;
 category_prediction_rate_array(Ncategories,2) = 0;
 prediction_incl_similar_array(Ncategories,2) = 0;
+clear category_prediction_rate_inc_similar
+clear category_prediction_rate
 for t =  1:Ncategories
     t
-    portionTesting = t*portion_step; % size of a testing test is (portionTesting * Nitems)
+    portionTraining = t*portion_step; % size of a testing test is (portionTesting * Nitems)
     %category prediction is made using preference models estimated based on items ranked as r
     cor_th = 0.2;
     clear counter_correct_prediction;
     clear counter_similar_prediction;
-    correctly_predicted_items(Nitems, Nrates) = 0;
+    clear correctly_predicted_items;
+    G_est = zeros(Nitems, Nrates);
     for j = 1:N
-        training_subset_ind = floor(rand(Nitems - round(Nitems * portionTesting), 1) * Nitems) + 1;
+        training_subset_ind =  randperm(Nitems, floor(Nitems * portionTraining) + 1);
         testing_subset_ind =  setdiff(1:Nitems, training_subset_ind);
-        R_ = R;
+        R_ = R;%(:, training_subset_ind);
         %R_(:, testing_subset_ind) = 0;
-        G_ = G;
+        G_ = G;%G(training_subset_ind,:);
         G_(testing_subset_ind,:) = 0;
         [Pr_ItemInCategory Pr_Item Pr_Category] = buildBernoulliModel(R_, G_);
         counter_correct_prediction(j, Nrates) = 0;
@@ -94,10 +88,9 @@ for t =  1:Ncategories
                 %[max_val estimated_category] = max(combined_likelihood);
                 if(~isempty(intersect(estimated_category(:), true_categories)))
                     counter_correct_prediction(j, r) = counter_correct_prediction(j, r) + 1;
-                    correctly_predicted_items(j, testing_subset_ind(i)) = estimated_category(:);
+                    G_est(testing_subset_ind(i), estimated_category(:)) = 1;
                 end
             end
-
         end
     end
     for r = 1:Nrates
@@ -110,9 +103,9 @@ for t =  1:Ncategories
 end
 figure, hold on, grid on;
 for r = 1:Nrates
-    ax = errorbar(category_prediction_ratec_array(end:-1:1,1, r), category_prediction_ratec_array(end:-1:1,2, r));
+    ax = errorbar(category_prediction_ratec_array(:,1, r), category_prediction_ratec_array(:,2, r));
 
-    errorbar(prediction_incl_similar_array(end:-1:1,1, r), prediction_incl_similar_array(end:-1:1,2, r), 'color', ax.Color);
+    %errorbar(prediction_incl_similar_array(:,1, r), prediction_incl_similar_array(:,2, r), 'color', ax.Color);
     xlabel('Precentage of the total data used for training')
     ylabel('Correct prediction')
     ax = gca;

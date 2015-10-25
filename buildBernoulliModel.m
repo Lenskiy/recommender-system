@@ -24,7 +24,8 @@ function [Pr_ItemInCategory Pr_Item Pr_Category] = buildBernoulliModel(R, G)
     for r = 1:Nrates
         for c = 1:Ncategories
             for u = 1:Nusers
-                Pr_UinC(u,c,r) = sum(Rn(u,:,r) .* G(:,c)') / (2 + sum(G(:,c)'));
+                Pr_UinC(u,c,r) = (1 + sum(Rn(u,:,r) .* G(:,c)')) / (2 + sum(G(:,c)'));
+                %Pr_UinC(u,c,r) = (1 + sum(Rn(u,:,r) .* G(:,c)')) / (2 + sum(Rn(u,:,r))); % replaced G(:,c)' by  Rn(u,:,r)
             end
         end
     end
@@ -39,9 +40,9 @@ function [Pr_ItemInCategory Pr_Item Pr_Category] = buildBernoulliModel(R, G)
     for r = 1:Nrates
         for c = 1:Ncategories
             for i = 1:Nitems
-%                  Pr_ItemInCategory(i, c, r) =  prod(Rn(:,i,r) .* Pr_UinC(:,c,r) +...
-%                                             + (1 - Rn(:,i,r)) .* (1 - Pr_UinC(:,c,r)));
-                Pr_ItemInCategory(i, c, r) =  sum(log(Pr_UinC(:,c,r).*Rn(:,i,r) + (1 - Pr_UinC(:,c,r)).*(1 - Rn(:,i,r))));
+                  Pr_ItemInCategory(i, c, r) =  prod(Rn(:,i,r) .* Pr_UinC(:,c,r) +...
+                                             + (1 - Rn(:,i,r)) .* (1 - Pr_UinC(:,c,r)));
+                %Pr_ItemInCategory(i, c, r) =  sum(log(Rn(:,i,r).*Pr_UinC(:,c,r) + (1 - Rn(:,i,r)).*(1 - Pr_UinC(:,c,r))));
             end
         end
     end
