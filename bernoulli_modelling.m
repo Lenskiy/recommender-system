@@ -50,7 +50,7 @@ category_prediction_rate_array(Ncategories,2) = 0;
 prediction_incl_similar_array(Ncategories,2) = 0;
 clear category_prediction_rate_inc_similar
 clear category_prediction_rate
-for t =  1:Ncategories
+for t =  1:19
     t
     portionTraining = t*portion_step; % size of a testing test is (portionTesting * Nitems)
     %category prediction is made using preference models estimated based on items ranked as r
