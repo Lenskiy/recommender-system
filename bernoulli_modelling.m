@@ -58,7 +58,7 @@ for t =  1:19
     clear counter_correct_prediction;
     clear counter_similar_prediction;
     clear correctly_predicted_items;
-    G_est = zeros(Nitems, Nrates);
+    G_est = zeros(Nitems, Ncategories);
     for j = 1:N
         training_subset_ind =  randperm(Nitems, floor(Nitems * portionTraining) + 1);
         testing_subset_ind =  setdiff(1:Nitems, training_subset_ind);
@@ -80,7 +80,7 @@ for t =  1:19
                 %[max_val estimated_category] = max(sum(log(likelihood)));  %./ (ones(1,Ncategories)' * Rnum)'
                 %[votes estimated_category] = max(hist(estimated_category, unique(estimated_category)));
                 predicted_category_hist(estimated_category, r) = predicted_category_hist(estimated_category, r) + 1;
-                true_categories = find (G(i,:) ~= 0);
+                true_categories = find (G(testing_subset_ind(i),:) ~= 0);
                 counter_similar_prediction(j, r) = counter_similar_prediction(j, r) + ...
                     (length(find(G_cor(true_categories, estimated_category(:)) > cor_th)) > 0);
                 %likelihood_norm = likelihood ./ (ones(5,1) * sum(likelihood));
@@ -103,14 +103,15 @@ for t =  1:19
 end
 figure, hold on, grid on;
 for r = 1:Nrates
-    ax = errorbar(category_prediction_ratec_array(:,1, r), category_prediction_ratec_array(:,2, r));
+    
+    errorbar(category_prediction_ratec_array(:,1, r), category_prediction_ratec_array(:,2, r));
 
-    %errorbar(prediction_incl_similar_array(:,1, r), prediction_incl_similar_array(:,2, r), 'color', ax.Color);
+    %ax = errorbar(prediction_incl_similar_array(:,1, r), prediction_incl_similar_array(:,2, r), 'color', ax.Color);
     xlabel('Precentage of the total data used for training')
     ylabel('Correct prediction')
     ax = gca;
     ax.XTick = [1:Ncategories];
-    ax.XTickLabel = [ ((1:Ncategories) * portion_step) * 100];
+    ax.XTickLabel = [ ((1:19) * portion_step) * 100];
 end
 % pred = find(correctly_predicted_items(1,:) > 0);
 % sum(G(pred,:))

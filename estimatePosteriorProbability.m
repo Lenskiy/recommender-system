@@ -4,11 +4,12 @@ function Pr_CategoryGivenI = estimatePosteriorProbability(Pr_ItemInCategory, Pr_
     Nrates = size(Pr_ItemInCategory,3);
     %Posterior probability
     Pr_CategoryGivenI = zeros(Nitems, Ncategories, Nrates);
-    logPr_Category = log(Pr_Category);
+    
     for r = 1:Nrates
+        logPr_Category(r, :) = log(Pr_Category(r,:));
         for i = 1:Nitems
             %Pr_CategoryGivenI(i, :, r) =  Pr_Category .* Pr_ItemInCategory(i, :, r) ./ Pr_Item(i,r);
-            Pr_CategoryGivenI(i, :, r) =  logPr_Category + log(Pr_ItemInCategory(i, :, r)) - log(Pr_Item(i,r));
+            Pr_CategoryGivenI(i, :, r) =  logPr_Category(r,:) + log(Pr_ItemInCategory(i, :, r)) - log(Pr_Item(i,r));
         end
         %Pr_CategoryGivenI(i,isnan(Pr_CategoryGivenI(i,:,r)), r) = 0;
     end
