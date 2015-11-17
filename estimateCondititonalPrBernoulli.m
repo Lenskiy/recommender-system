@@ -1,4 +1,4 @@
-function Pr_ItemInCategory = estimateCondititonalPrBernoulli(Pr_UratedC, R)p
+function Pr_ItemInCategory = estimateCondititonalPrBernoulli(Pr_UratedC, R)
     Nitems = size(R,2);                 %number of items
     
     Nusers = size(Pr_UratedC, 1);       %number of users
@@ -15,8 +15,8 @@ function Pr_ItemInCategory = estimateCondititonalPrBernoulli(Pr_UratedC, R)p
             %ind = find(G(:,c) ~= 0);
             ind = 1:Nitems;
             for i = 1:length(ind)%Nitems
-                Pr_ItemInCategory_temp(ind(i)) =  prod(R_temp(:,ind(i)) .* Pr_UratedC_temp(:,c) + (1 - R_temp(:,ind(i))) .* (1 - Pr_UratedC_temp(:,c)));
-                %Pr_ItemInCategory(i, c, r) =  sum(log(Rn(:,i,r).*Pr_UinC(:,c,r) + (1 - Rn(:,i,r)).*(1 - Pr_UinC(:,c,r))));
+                %Pr_ItemInCategory_temp(ind(i)) =  prod(R_temp(:,ind(i)) .* Pr_UratedC_temp(:,c) + (1 - R_temp(:,ind(i))) .* (1 - Pr_UratedC_temp(:,c)));
+                Pr_ItemInCategory_temp(ind(i)) =  sum(log(R_temp(:,ind(i)) .* Pr_UratedC_temp(:,c) + (1 - R_temp(:,ind(i))) .* (1 - Pr_UratedC_temp(:,c))));
             end
             Pr_ItemInCategory(:, c, r) = Pr_ItemInCategory_temp;
         end   

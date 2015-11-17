@@ -14,7 +14,7 @@ function [Pr_Category Pr_UratedC] = buildUserPrefenceModel(R, G)
             end
         end
     end
-    Pr_Category = (total_ratings  ./ (sum(total_ratings')' * ones(1, Ncategories)));
+    Pr_Category = ((total_ratings + 1)  ./ ((sum(total_ratings')' + Ncategories)  * ones(1, Ncategories))); %Add Lapalcian smoothing
     
 	%Rn indicates whether user_t rated item_i as n
     Rn = zeros(Nusers, Nitems, Nrates); % allocate memory
