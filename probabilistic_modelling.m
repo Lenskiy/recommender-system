@@ -69,6 +69,7 @@ portion_step = 0.05;
             testProbabilisticModel(R, G, N, portion_step, @buildUserPrefenceModel,...
             @estimateCondititonalPrBernoulli, @estimatePosteriorProbability);
 
+%visualizeCategoryPredictionResults(Bernoulli_category_prediction_ratec_array, Bernoulli_prediction_incl_similar_array, portion_step);
 visualizeCategoryPredictionResults(Bernoulli_category_prediction_ratec_array, Bernoulli_prediction_incl_similar_array, portion_step);
 
 % Multinomial model 
