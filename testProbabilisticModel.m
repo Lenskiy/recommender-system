@@ -40,7 +40,7 @@ function [category_prediction_ratec_array, prediction_incl_similar_array, G_cor]
 
             counter_correct_prediction(j, 1:Nrates) = 0;
             counter_similar_prediction(j, 1:Nrates) = 0;
-            Pr_ItemInCategory = estimateCondititonalProbability(Pr_UratedC, R_test);
+            Pr_ItemInCategory = estimateCondititonalProbability(Pr_UratedC, R_test); %164 %175
             Pr_CategoryGivenI = estimatePosteriorProbability(Pr_ItemInCategory, Pr_Category);
             for i = 1:length(testing_subset_ind)
                  %figure, hold on;
@@ -57,7 +57,7 @@ function [category_prediction_ratec_array, prediction_incl_similar_array, G_cor]
                     %likelihood_norm = likelihood ./ (ones(5,1) * sum(likelihood));
                     %combined_likelihood = sum(likelihood_norm .* (ones(19,1) * [1 2 3 4 5])');
                     %[max_val estimated_category] = max(combined_likelihood);
-                    if(~isempty(intersect(estimated_category(:), true_categories)))
+                    if(~isempty(MY_intersect(estimated_category(:), true_categories)))
                         counter_correct_prediction(j, r) = counter_correct_prediction(j, r) + 1;
                         G_est(testing_subset_ind(i), estimated_category(:)) = 1;
                     end

@@ -10,14 +10,15 @@ function Pr_ItemInCategory = estimateCondititonalPrLikelihood(Pr_UratedC, R)
     Pr_ItemInCategory_temp = zeros(Nitems, 1);
     for r = 1:Nrates
         R_temp = (R == r);
+        logPr_UratedC_temp = log(Pr_UratedC(:,:,r)');
         for c = 1:Ncategories
-            Pr_UratedC_temp = Pr_UratedC(:,:,r);
             %ind = find(G(:,c) ~= 0);
-            ind = 1:Nitems;
-            for i = 1:length(ind)%Nitems
+            %ind = 1:Nitems;
+            for i = 1:Nitems %length(ind)
                 %Pr_ItemInCategory_temp(ind(i)) =  prod(R_temp(:,ind(i)) .* Pr_UratedC_temp(:,c));
                 %Pr_ItemInCategory_temp(ind(i)) =  prod(Pr_UratedC_temp(:,c).^R_temp(:,ind(i)));
-                Pr_ItemInCategory_temp(ind(i)) =  sum(log(Pr_UratedC_temp(:,c).^R_temp(:,ind(i))));
+                %%Pr_ItemInCategory_temp(ind(i)) =  sum(log(Pr_UratedC_temp(:,c).^R_temp(:,ind(i))));
+                Pr_ItemInCategory_temp(i) =   logPr_UratedC_temp(c,:) * R_temp(:,i); %2253
             end
             Pr_ItemInCategory(:, c, r) = Pr_ItemInCategory_temp;
         end   

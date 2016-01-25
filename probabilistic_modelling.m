@@ -24,7 +24,7 @@
 % end
 
 %% Data preparation: replace this section with new data. R is rating and G is category matrix
-DB = '1M';
+DB = '100k';
 switch(DB)
     case '100k'
         load('R_G.mat');
@@ -43,24 +43,27 @@ Ncategories = size(G,2);    %number of genres
 Nrates = max(max(R));   %number of rates
 
 %% Plot figures for the paper     
-% [Pr_Category Pr_UratedC] = buildUserPrefenceModel(R, G);
-% r = 1;
-% figure('Position', [100, 100, 540, 1.5*257]), hold on, grid on;
-% xlabel('categories');ylabel('users');zlabel(['P(genre, user, ' num2str(r) ')']);
-% for c = 1:Ncategories
-%     plot3(c*ones(1,Nusers), 1:Nusers, Pr_UratedC(:,c,r));
-% end
-% Rt = (R == r);
-% figure('Position', [100, 100, 540, 1.5*257]), hold on, grid on;
-% xlabel('categories');ylabel('users');zlabel(['R_1(:,item) P(genre, user, ' num2str(r) ')']);
-% for c = 1:Ncategories
-%     prIgivenC(c) = prod(Rt(:,1).*Pr_UratedC(:,c,r) + (1 - Rt(:,1)).*(1 - Pr_UratedC(:,c,r)));
-%     plot3(c*ones(1,Nusers), 1:Nusers, Rt(:,1).*Pr_UratedC(:,c,r));
-% end
+[Pr_Category Pr_UratedC] = buildUserPrefenceModel(R, G);
+r = 2;
+figure('Position', [100, 100, 540, 1.5*257]), hold on, grid on;
+axis([1 18 1 size(R,1) 0, max(max(Pr_UratedC(:,:,r)))]);
+xlabel('categories');ylabel('users');zlabel(['P(genre, user, ' num2str(r) ')']);
+for c = 1:Ncategories
+    plot3(c*ones(1,Nusers), 1:Nusers, Pr_UratedC(:,c,r));
+end
+
+Rt = (R == r);
+figure('Position', [100, 100, 540, 1.5*257]), hold on, grid on;
+axis([1 18 1 size(R,1) 0, max(max(Pr_UratedC(:,:,r)))]);
+xlabel('categories');ylabel('users');zlabel(['R_1(:,item) P(genre, user, ' num2str(r) ')']);
+for c = 1:Ncategories
+    prIgivenC(c) = prod(Rt(:,1).*Pr_UratedC(:,c,r) + (1 - Rt(:,1)).*(1 - Pr_UratedC(:,c,r)));
+    plot3(c*ones(1,Nusers), 1:Nusers, Rt(:,1).*Pr_UratedC(:,c,r));
+end
 
 %% Bernoulli model 
 %Simulate prediction of an item's category N times for different sets of items that are used for training
-N = 2;
+N = 10;
 portion_step = 0.05;
 [Bernoulli_category_prediction_ratec_array, Bernoulli_prediction_incl_similar_array, G_cor] =...
             testProbabilisticModel(R, G, N, portion_step, @buildUserPrefenceModel,...
@@ -68,12 +71,12 @@ portion_step = 0.05;
 
 visualizeCategoryPredictionResults(Bernoulli_category_prediction_ratec_array, Bernoulli_prediction_incl_similar_array, portion_step);
 
-%% Multinomial model 
-% [likelihood_category_prediction_ratec_array, likelihood_prediction_incl_similar_array, G_cor] =...
-%             testProbabilisticModel(R, G, N, portion_step, @buildUserPrefenceModel,...
-%             @estimateCondititonalPrLikelihood, @estimatePosteriorProbability);
-% 
-% visualizeCategoryPredictionResults(likelihood_category_prediction_ratec_array, likelihood_prediction_incl_similar_array, portion_step);
+% Multinomial model 
+[likelihood_category_prediction_ratec_array, likelihood_prediction_incl_similar_array, G_cor] =...
+            testProbabilisticModel(R, G, N, portion_step, @buildUserPrefenceModel,...
+            @estimateCondititonalPrLikelihood, @estimatePosteriorProbability);
+
+visualizeCategoryPredictionResults(likelihood_category_prediction_ratec_array, likelihood_prediction_incl_similar_array, portion_step);
 %% Visualize correlation matrix
 % figure, imagesc(G_cor);                                 
 % colorbar;
@@ -83,6 +86,3 @@ visualizeCategoryPredictionResults(Bernoulli_category_prediction_ratec_array, Be
 % ax.XTickLabel = movie_genre;
 % ax.YTickLabel = movie_genre;
 % set(gca, 'XTickLabelRotation', 45)
-
-
-

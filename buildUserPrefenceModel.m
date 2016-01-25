@@ -9,9 +9,12 @@ function [Pr_Category Pr_UratedC] = buildUserPrefenceModel(R, G)
     for r = 1:Nrates
         Rt = (R == r);
         for c = 1:Ncategories
+            signs = sign(G(:,c));
+            tr = 0;
             for u = 1:size(R,1)
-                total_ratings(r,c) = total_ratings(r,c) + Rt(u,:) * sign(G(:,c));
+                tr = tr + Rt(u,:) * signs; % 43
             end
+            total_ratings(r,c) = tr;
         end
     end
     Pr_Category = ((total_ratings + 1)  ./ ((sum(total_ratings')' + Ncategories)  * ones(1, Ncategories))); %Add Lapalcian smoothing
@@ -31,10 +34,11 @@ function [Pr_Category Pr_UratedC] = buildUserPrefenceModel(R, G)
     for r = 1:Nrates
         R_temp = Rn(:,:,r)';
         for c = 1:Ncategories
-            itemsGeners = sign(G(:,c));
+            itemsGeners = sign(G(:,c))';
             denom = 2 + sum(itemsGeners); % make it dependent on r
             for u = 1:Nusers
-                 Pr_UratedC_temp(u) = R_temp(:,u)' * itemsGeners;
+                %%Pr_UratedC_temp(u) = R_temp(:,u)' * itemsGeners; % 34
+                Pr_UratedC_temp(u) = itemsGeners * R_temp(:,u); % 27
                 %Pr_UinC(u,c,r) = (1 + sum(Rn(u,:,r) .* G(:,c)')) / (2 + sum(Rn(u,:,r))); % replaced G(:,c)' by  Rn(u,:,r)
             end
             Pr_UratedC(:,c,r) = (Pr_UratedC_temp + 1) / denom;
