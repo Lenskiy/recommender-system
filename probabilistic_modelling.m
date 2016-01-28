@@ -44,7 +44,7 @@ Nrates = max(max(R));   %number of rates
 
 %% Plot figures for the paper     
 [Pr_Category Pr_UratedC] = buildUserPrefenceModel(R, G);
-r = 2;
+r = 3;
 figure('Position', [100, 100, 540, 1.5*257]), hold on, grid on;
 axis([1 18 1 size(R,1) 0, max(max(Pr_UratedC(:,:,r)))]);
 xlabel('categories');ylabel('users');zlabel(['P(genre, user, ' num2str(r) ')']);
@@ -70,14 +70,14 @@ portion_step = 0.05;
             @estimateCondititonalPrBernoulli, @estimatePosteriorProbability);
 
 %visualizeCategoryPredictionResults(Bernoulli_category_prediction_ratec_array, Bernoulli_prediction_incl_similar_array, portion_step);
-visualizeCategoryPredictionResults(Bernoulli_category_prediction_ratec_array, Bernoulli_prediction_incl_similar_array, portion_step);
+visualizeCategoryPredictionResultsInOnePlot(Bernoulli_category_prediction_ratec_array, Bernoulli_prediction_incl_similar_array, portion_step);
 
 % Multinomial model 
 [likelihood_category_prediction_ratec_array, likelihood_prediction_incl_similar_array, G_cor] =...
             testProbabilisticModel(R, G, N, portion_step, @buildUserPrefenceModel,...
             @estimateCondititonalPrLikelihood, @estimatePosteriorProbability);
 
-visualizeCategoryPredictionResults(likelihood_category_prediction_ratec_array, likelihood_prediction_incl_similar_array, portion_step);
+visualizeCategoryPredictionResultsInOnePlot(likelihood_category_prediction_ratec_array, likelihood_prediction_incl_similar_array, portion_step);
 %% Visualize correlation matrix
 % figure, imagesc(G_cor);                                 
 % colorbar;
