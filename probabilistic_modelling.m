@@ -1,23 +1,38 @@
-% R(length(unique(USER_DATA(:,1))), length(unique(USER_DATA(:,2)))) = 0;
-% 
-% for i = 1:length(unique(USER_DATA(:,1)))
-%    user_i_idx = find(USER_DATA(:,1) == i);
-%    item_by_i = USER_DATA(user_i_idx,2);
-%    ratings_by_i = USER_DATA(user_i_idx,3);
-%    R(i, item_by_i) = ratings_by_i;
+%% Preprocess the data and put it in R and G matrices
+% R(length(unique(USER_DATA(:,1))), length(unique(USER_DATA(:,2)))) = uint8(0);
+% item_set_from_ratings = unique(USER_DATA(:,2));
+% l = length(unique(USER_DATA(:,1)));
+% for u = 1:l %u is for users
+%    user_u_idx = find(USER_DATA(:,1) == u);
+%    items_by_u = USER_DATA(user_u_idx,2);
+%    clear items_by_u_nogaps;
+%    for i = 1:length(items_by_u)
+%         items_by_u_nogaps(i) = find(item_set_from_ratings == items_by_u(i));
+%    end
+%    ratings_by_i = uint8(2*USER_DATA(user_u_idx,3) - 1);
+%    R(u, items_by_u_nogaps) = ratings_by_i;
+%    u/l
 % end
 % 
 % movie_genre = {'Action', 'Aventure', 'Animation', ['Children' char(39) 's'],... 
 %     'Comedy', 'Crime', 'Documentary', 'Drama', 'Fantasy', 'Film-Noir', 'Horror',...
 %     'Musical', 'Mystery', 'Romance','Sci-Fi', 'Thriller', 'War', 'Western'};
 % 
-% G = zeros(movies{end,1}, length(movie_genre));
 % for i = 1:size(movies,1)
-%     %i
-%     for c = 1:18
-%         for j = 2:7
-%             if(strcmp(movies{i,j}, movie_genre{c}))
-%                 G(movies{i,1}, c) = strcmp(movies{i,j}, movie_genre{c});
+%     moviesID(i) = movies{i,1};
+% end
+% 
+% 
+% G = zeros(length(unique(USER_DATA(:,2))), length(movie_genre));
+% for i = 1:length(moviesID)
+%     i
+%     ind = find(moviesID(i) == item_set_from_ratings);
+%     if(~isempty(ind))
+%         for c = 1:length(movie_genre)
+%             for j = 2:size(movies,2)
+%                 if(strcmp(movies{i,j}, movie_genre{c}))
+%                     G(ind, c) = 1;
+%                 end
 %             end
 %         end
 %     end
@@ -34,6 +49,8 @@ switch(DB)
         G = (G' ./ (ones(size(G,2), 1) * sum(G')))'; %convert to probabilities, each row sums up to one
     case '1M'
         load('R_G_1M.mat');
+    case '2M'
+        load('R_G_20M.mat');        
 end
 
 %% 
@@ -63,7 +80,7 @@ end
 
 %% Bernoulli model 
 %Simulate prediction of an item's category N times for different sets of items that are used for training
-N = 10;
+N = 2;
 portion_step = 0.05;
 [Bernoulli_category_prediction_ratec_array, Bernoulli_prediction_incl_similar_array, G_cor] =...
             testProbabilisticModel(R, G, N, portion_step, @buildUserPrefenceModel,...
