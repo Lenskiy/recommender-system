@@ -18,10 +18,11 @@ function logPr_ItemInCategory = estimateCondititonalPrLikelihood(Pr_UratedC, R)
                 %Pr_ItemInCategory_temp(ind(i)) =  prod(R_temp(:,ind(i)) .* Pr_UratedC_temp(:,c));
                 %Pr_ItemInCategory_temp(ind(i)) =  prod(Pr_UratedC_temp(:,c).^R_temp(:,ind(i)));
                 %%Pr_ItemInCategory_temp(ind(i)) =  sum(log(Pr_UratedC_temp(:,c).^R_temp(:,ind(i))));
-                logPr_ItemInCategory_temp(i) =   logPr_UratedC_temp(c,:) * R_temp(:,i); %2253
+            %    logPr_ItemInCategory_temp(i) =   logPr_UratedC_temp(c,:) * R_temp(:,i); %2253
+                logPr_ItemInCategory_temp(i) =   logPr_UratedC_temp(c,:) * R_temp(:,i);
             end
+            %logPr_ItemInCategory(:, c, r) =  sum(ones(Nitems, 1) * logPr_UratedC_temp(c,:) .* R_temp, 2); % 240
             logPr_ItemInCategory(:, c, r) = logPr_ItemInCategory_temp;
         end   
     end
-
 end

@@ -39,7 +39,7 @@
 % end
 
 %% Data preparation: replace this section with new data. R is rating and G is category matrix
-DB = '100k';
+DB = '20M';
 switch(DB)
     case '100k'
         load('R_G.mat');
@@ -49,7 +49,7 @@ switch(DB)
         G = (G' ./ (ones(size(G,2), 1) * sum(G')))'; %convert to probabilities, each row sums up to one
     case '1M'
         load('R_G_1M.mat');
-    case '2M'
+    case '20M'
         load('R_G_20M.mat');        
 end
 
