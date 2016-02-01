@@ -15,12 +15,14 @@ function [Pr_Category Pr_UratedC] = buildUserPrefenceModel(R, G)
         %R_temp(R == r) = true; % indicates whether user_t rated item_i as n
         R_temp = R_temp';
         for c = 1:Ncategories
-            itemsGeners = G(:,c);
-            for u = 1:Nusers
-                %tr = tr + sum(R_temp(:,u) & itemsGeners); %1031 %638 
-                Pr_UratedC_temp(u) = nnz(R_temp(:,u) & itemsGeners); %The number of users rated movies of category c
-                %tr = tr + numUserRatedC;
-            end
+%            itemsGeners = G(:,c);
+%             for u = 1:Nusers
+%                 %tr = tr + sum(R_temp(:,u) & itemsGeners); %1031 %638 
+%                 Pr_UratedC_temp(u) = nnz(R_temp(:,u) & itemsGeners); %The number of users rated movies of category c
+%                  \
+%                 %tr = tr + numUserRatedC;
+%             end
+            Pr_UratedC_temp = sum(bsxfun(@and, R_temp, G(:,c)), 1);
             total_ratings(r,c) = sum(Pr_UratedC_temp);
             Pr_UratedC(:,c,r) = (Pr_UratedC_temp + 1) / (total_ratings(r,c) + Nusers);
         end
