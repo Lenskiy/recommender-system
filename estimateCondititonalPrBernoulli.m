@@ -10,7 +10,7 @@ function logPr_ItemInCategory = estimateCondititonalPrBernoulli(Pr_UratedC, R)
     %logPr_ItemInCategory_temp = zeros(Nitems, 1);
     for r = 1:Nrates
         R_temp = (R == r);
-        R_temp_neg = 1 - R_temp; 
+        R_temp_neg = ~R_temp; 
         for c = 1:Ncategories
             Pr_UratedC_temp = Pr_UratedC(:,:,r);
             %ind = find(G(:,c) ~= 0);
