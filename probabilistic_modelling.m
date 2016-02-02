@@ -38,6 +38,7 @@
 %     end
 % end
 
+
 %% Data preparation: replace this section with new data. R is rating and G is category matrix
 DB = '20M';
 switch(DB)
@@ -53,6 +54,10 @@ switch(DB)
         load('R_G_20M.mat');        
 end
 
+O = zeros(size(R,1), length(unique(users(:,4))));
+for i = 1:size(R,1)
+    O(i, users(i,4)) = 1;
+end
 %% 
 Nusers = size(R,1);     %number of users
 Nitems = size(R,2);     %number of items
@@ -60,7 +65,7 @@ Ncategories = size(G,2);    %number of genres
 Nrates = max(max(R));   %number of rates
 
 %% Plot figures for the paper     
-[Pr_Category Pr_UratedC] = buildUserPrefenceModel(R, G);
+[Pr_Category Pr_UratedC] = buildUserPrefenceModel(R, O);
 r = 3;
 figure('Position', [100, 100, 540, 1.5*257]), hold on, grid on;
 axis([1 18 1 size(R,1) 0, max(max(Pr_UratedC(:,:,r)))]);

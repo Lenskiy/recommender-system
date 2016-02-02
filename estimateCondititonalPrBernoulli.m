@@ -6,13 +6,13 @@ function logPr_ItemInCategory = estimateCondititonalPrBernoulli(Pr_UratedC, R)
     Nrates = size(Pr_UratedC, 3);       %number of rates
     
     % Estimate conditional probability of Item i given Class c
-    logPr_ItemInCategory = zeros(Nitems, Ncategories, Nrates); % allocate memory
+    logPr_ItemInCategory = zeros(Nitems, Ncategories, Nrates, 'single'); % allocate memory
     %logPr_ItemInCategory_temp = zeros(Nitems, 1);
     for r = 1:Nrates
         R_temp = (R == r);
         R_temp_neg = ~R_temp; 
         for c = 1:Ncategories
-            Pr_UratedC_temp = Pr_UratedC(:,:,r);
+            Pr_UratedC_temp = single(Pr_UratedC(:,:,r));
             %ind = find(G(:,c) ~= 0);
             %ind = 1:Nitems;
 %             for i = 1:Nitems
