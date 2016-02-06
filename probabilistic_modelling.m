@@ -86,7 +86,7 @@ end
 %% Bernoulli model 
 %Simulate prediction of an item's category N times for different sets of items that are used for training
 N = 2;
-portion_step = 0.05;
+portion_step = 0.10;
 [Bernoulli_category_prediction_ratec_array, Bernoulli_prediction_incl_similar_array, G_cor] =...
             testProbabilisticModel(R, G, N, portion_step, @buildUserPrefenceModel,...
             @estimateCondititonalPrBernoulli, @estimatePosteriorProbability);

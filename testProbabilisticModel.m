@@ -15,7 +15,7 @@ function [category_prediction_ratec_array, prediction_incl_similar_array, G_cor]
 
     predicted_category_hist = zeros(Ncategories,  Nrates);
 
-    for t =  1:19
+    for t =  1:(round(1/portion_step) - 1)
         t
         portionTraining = t*portion_step; % size of a testing test is (portionTesting * Nitems)
         %category prediction is made using preference models estimated based on items ranked as r

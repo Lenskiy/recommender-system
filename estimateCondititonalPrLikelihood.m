@@ -4,7 +4,8 @@ function logPr_ItemInCategory = estimateCondititonalPrLikelihood(Pr_UratedC, R)
     Nusers = size(Pr_UratedC, 1);       %number of users
     Ncategories = size(Pr_UratedC, 2);  %number of genres
     Nrates = size(Pr_UratedC, 3);       %number of rates
-    
+    Nusers_half = ceil(Nusers/2);
+     
     % Estimate conditional probability of Item i given Class c
     logPr_ItemInCategory = zeros(Nitems, Ncategories, Nrates); % allocate memory
     logPr_ItemInCategory_temp = zeros(Nitems, 1);
@@ -21,7 +22,9 @@ function logPr_ItemInCategory = estimateCondititonalPrLikelihood(Pr_UratedC, R)
 %             %    logPr_ItemInCategory_temp(i) =   logPr_UratedC_temp(c,:) * R_temp(:,i); %2253
 %                 logPr_ItemInCategory_temp(i) =   logPr_UratedC_temp(c,:) * R_temp(:,i);
 %             end
-             logPr_ItemInCategory(:, c, r) =   sum(bsxfun(@times, R_temp, logPr_UratedC_temp(c,:)), 2);
+             logPr_ItemInCategory(:, c, r) =   sum(bsxfun(@times, R_temp(:, 1:Nusers_half), logPr_UratedC_temp(c,1:Nusers_half)), 2);
+             logPr_ItemInCategory(:, c, r) =   logPr_ItemInCategory(:, c, r) + sum(bsxfun(@times, R_temp(:, Nusers_half + 1:end), logPr_UratedC_temp(c, Nusers_half + 1:end)), 2);
+             %logPr_ItemInCategory(:, c, r) =   sum(bsxfun(@times, R_temp, logPr_UratedC_temp(c,:)), 2);
 %             logPr_ItemInCategory(:, c, r) =  sum(ones(Nitems, 1) * logPr_UratedC_temp(c,:) .* R_temp, 2); % 240
 %            logPr_ItemInCategory(:, c, r) = logPr_ItemInCategory_temp;
             %logPr_ItemInCategory(:, c, r) =  sum(ones(Nitems, 1, 'single') * logPr_UratedC_temp(c,:) .* R_temp, 2);
