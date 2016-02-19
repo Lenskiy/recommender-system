@@ -25,6 +25,7 @@ function [category_prediction_ratec_array, prediction_incl_similar_array, G_cor]
         clear correctly_predicted_items;
         G_est = zeros(Nitems, Ncategories);
         for j = 1:N
+            j
             training_subset_ind = randperm(Nitems, floor(Nitems * portionTraining));
             testing_subset_ind =  setdiff(1:Nitems, training_subset_ind);
             R_train = R;
