@@ -2,10 +2,10 @@ function [category_prediction_ratec_array, prediction_incl_similar_array, G_cor]
             testProbabilisticModel(R, G, N, portion_step, buildUserPrefenceModel,...
             estimateCondititonalProbability, estimatePosteriorProbability)
 
-    Nusers = size(R,1);     %number of users
-    Nitems = size(R,2);     %number of items
+    Nusers = size(R,1);         %number of users
+    Nitems = size(R,2);         %number of items
     Ncategories = size(G,2);    %number of genres
-    Nrates = max(max(R));   %number of rates     
+    Nrates = max(max(R));       %number of rates     
     
     %% Calcuate correlation model
     G_norm = (G - ones(size(G,1),1) * mean(G));      % subtract mean
