@@ -4,7 +4,7 @@ function [Pr_Category Pr_UratedC] = buildUserPrefenceModel(R, G)
     Ncategories = size(G,2);    %number of genres
     Nrates = max(max(R));   %number of rates
     G = logical(G);
-    %Estimate prior probabilities
+    %Estimate prior probabilities 
     total_ratings = zeros(Nrates, Ncategories);
     Pr_UratedC = zeros(Nusers, Ncategories, Nrates); % allocate memory
     Pr_UratedC_temp = zeros(1, Nusers);    

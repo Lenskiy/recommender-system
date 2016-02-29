@@ -88,7 +88,7 @@ end
 [i,j,s] = find(R);
 [m,n] = size(R);
 R_ = sparse(i,j,double(s),m,n);
-N = 10;
+N = 50;
 portion_step = 0.05;
 [Bernoulli_category_prediction_ratec_array, Bernoulli_prediction_incl_similar_array, G_cor] =...
             testProbabilisticModel(R_, G, N, portion_step, @buildUserPrefenceModel,...
