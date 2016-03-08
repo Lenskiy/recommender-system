@@ -1,9 +1,9 @@
-function [Pr_Category Pr_UratedC] = buildUserPrefenceModel(R, G)
+function [Pr_Category, Pr_UratedC] = buildUserPrefenceModel(R, G)
     Nusers = size(R,1);     %number of users
     Nitems = size(R,2);     %number of items
     Ncategories = size(G,2);    %number of genres
     Nrates = max(max(R));   %number of rates
-    G = logical(G);
+    %G = logical(G);
     %Estimate prior probabilities 
     total_ratings = zeros(Nrates, Ncategories);
     Pr_UratedC = zeros(Nusers, Ncategories, Nrates); % allocate memory
@@ -22,14 +22,13 @@ function [Pr_Category Pr_UratedC] = buildUserPrefenceModel(R, G)
 %                  \
 %                 %tr = tr + numUserRatedC;
 %             end
-            Pr_UratedC_temp = sum(bsxfun(@and, R_temp, G(:,c)), 1);
+            Pr_UratedC_temp = sum(bsxfun(@times, R_temp, G(:,c)), 1);
             total_ratings(r,c) = sum(Pr_UratedC_temp);
             Pr_UratedC(:,c,r) = (Pr_UratedC_temp + 1) / (total_ratings(r,c) + Nusers);
         end
     end
-    Pr_Category = (total_ratings + 1)  ./ ((sum(total_ratings')' + Ncategories)...
-        * ones(1, Ncategories)); %Add Lapalcian smoothing
-    
+    %Pr_Category = (total_ratings + 1)  ./ ((sum(total_ratings')' + Ncategories) * ones(1, Ncategories)); %Add Lapalcian smoothing
+    Pr_Category = (((sum(G) + 1)/( sum(sum(G)) + size(G,2)))' * ones(1, length(unique(R)) - 1))';
     
 %     %Estimate probability user_i rates categoy_j as r
 %     Pr_UratedC = zeros(Nusers, Ncategories, Nrates); % allocate memory

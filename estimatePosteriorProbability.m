@@ -5,14 +5,14 @@ function Pr_CategoryGivenI = estimatePosteriorProbability(logPr_ItemInCategory, 
     
     
     %Prior probability of an item
-    Pr_Item = zeros(Nitems, Nrates);
+    logPr_Item = zeros(Nitems, Nrates);
     %Posterior probability of the class
     Pr_CategoryGivenI = zeros(Ncategories, Nitems, Nrates);
     for r = 1:Nrates
         logPr_Category(r, :) = log(Pr_Category(r,:));
         for i = 1:Nitems
-            Pr_Item(i,r) = sum(Pr_Category(r, :) .* exp(logPr_ItemInCategory(i, :, r)));
-            Pr_CategoryGivenI(:, i, r) = logPr_Category(r,:) + logPr_ItemInCategory(i, :, r) - log(Pr_Item(i,r));
+            logPr_Item(i,r) = log(sum(exp(logPr_Category(r, :) + logPr_ItemInCategory(i, :, r)))); % underflow here
+            Pr_CategoryGivenI(:, i, r) = logPr_Category(r,:) + logPr_ItemInCategory(i, :, r);% -  logPr_Item(i,r);
         end
     end
     

@@ -16,7 +16,7 @@ function logPr_ItemInCategory = estimateCondititonalPrLikelihood(Pr_UratedC, R)
         R_temp = full(R == r);
         Pr_UratedC_temp = log(Pr_UratedC(:,:,r));
         for c = 1:Ncategories
-            [r, c]
+            %[r, c]
             logPr_ItemInCategory_part = 0;
             for j = 1:div_coef - 1
                 %Rt = full(R_temp(((j - 1) * Nusers_part + 1):(j * Nusers_part), :)); % in case then data is too large 

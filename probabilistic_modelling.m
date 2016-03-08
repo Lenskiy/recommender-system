@@ -40,7 +40,7 @@
 
 
 %% Data preparation: replace this section with new data. R is rating and G is category matrix
-DB = '20M';
+DB = '100k';
 switch(DB)
     case '100k'
         load('R_G.mat');
@@ -65,44 +65,69 @@ Ncategories = size(G,2);    %number of genres
 Nrates = max(max(R));   %number of rates
 
 %% Plot figures for the paper     
-[Pr_Category Pr_UratedC] = buildUserPrefenceModel(R, O);
+[Pr_Category Pr_UratedC] = buildUserPrefenceModel(R, G);
 r = 3;
 figure('Position', [100, 100, 540, 1.5*257]), hold on, grid on;
 axis([1 18 1 size(R,1) 0, max(max(Pr_UratedC(:,:,r)))]);
-xlabel('categories');ylabel('users');zlabel(['P(genre, user, ' num2str(r) ')']);
+xlabel('genres');ylabel('users');zlabel(['$P(u | g)$'], 'interpreter','latex');
 for c = 1:Ncategories
     plot3(c*ones(1,Nusers), 1:Nusers, Pr_UratedC(:,c,r));
 end
+%Bernoull
+% Rt = (R == r);
+% figure('Position', [100, 100, 540, 1.5*257]), hold on, grid on;
+% axis([1 18 1 size(R,1) 0, max(max(Pr_UratedC(:,:,r)))]);
+% xlabel('categories');ylabel('users');zlabel(['R_1(:,item) P(genre, user, ' num2str(r) ')']);
+% for c = 1:Ncategories
+%     prIgivenC(c) = prod(Rt(:,1).*Pr_UratedC(:,c,r) + (1 - Rt(:,1)).*(1 - Pr_UratedC(:,c,r)));
+%     plot3(c*ones(1,Nusers), 1:Nusers, Rt(:,1).*Pr_UratedC(:,c,r));
+% end
 
 Rt = (R == r);
 figure('Position', [100, 100, 540, 1.5*257]), hold on, grid on;
-axis([1 18 1 size(R,1) 0, max(max(Pr_UratedC(:,:,r)))]);
-xlabel('categories');ylabel('users');zlabel(['R_1(:,item) P(genre, user, ' num2str(r) ')']);
+axis([1 18 1 size(R,2)]);
+xlabel('genres');ylabel('movies');zlabel(['$P(m | g)$'], 'interpreter','latex');
 for c = 1:Ncategories
-    prIgivenC(c) = prod(Rt(:,1).*Pr_UratedC(:,c,r) + (1 - Rt(:,1)).*(1 - Pr_UratedC(:,c,r)));
-    plot3(c*ones(1,Nusers), 1:Nusers, Rt(:,1).*Pr_UratedC(:,c,r));
+    for m = 1:Nitems
+        prIgivenCb(m,c) = sum(log(Rt(:,m).*Pr_UratedC(:,c,r) + (1 - Rt(:,m)).*(1 - Pr_UratedC(:,c,r))));
+    end
+    plot3(c*ones(1,Nitems), 1:Nitems, prIgivenC(:,c));
 end
 
+
+%Multinomial
+Rt = (R == r);
+figure('Position', [100, 100, 540, 1.5*257]), hold on, grid on;
+axis([1 18 1 size(R,2)]);
+xlabel('genres');ylabel('movies');zlabel(['$P(m | g)$'], 'interpreter','latex');
+for c = 1:Ncategories
+    prIgivenCm(:, c) = sum(log(bsxfun(@power, Pr_UratedC(:,c,r), Rt)));
+    plot3(c*ones(1,Nitems), 1:Nitems, prIgivenC(:, c));
+end
 %% Bernoulli model 
 %Simulate prediction of an item's category N times for different sets of items that are used for training
 [i,j,s] = find(R);
 [m,n] = size(R);
 R_ = sparse(i,j,double(s),m,n);
-N = 50;
-portion_step = 0.05;
+N = 5;
+train_parts = [0.01 0.05:0.05:0.8];
+test_parts = 0.2* ones(1,length(train_parts));
+G_ = bsxfun(@rdivide,G, sum(G')');
+G_(isnan(G_)) = 0;
 [Bernoulli_category_prediction_ratec_array, Bernoulli_prediction_incl_similar_array, G_cor] =...
-            testProbabilisticModel(R_, G, N, portion_step, @buildUserPrefenceModel,...
+            testProbabilisticModel(R, G_, N, train_parts, test_parts, @buildUserPrefenceModel,...
             @estimateCondititonalPrBernoulli, @estimatePosteriorProbability);
 
 %visualizeCategoryPredictionResults(Bernoulli_category_prediction_ratec_array, Bernoulli_prediction_incl_similar_array, portion_step);
-visualizeCategoryPredictionResultsInOnePlot(Bernoulli_category_prediction_ratec_array, Bernoulli_prediction_incl_similar_array, portion_step);
+visualizeCategoryPredictionResultsInOnePlot(Bernoulli_category_prediction_ratec_array, Bernoulli_prediction_incl_similar_array, train_parts);
+
 
 % Multinomial model 
-[likelihood_category_prediction_ratec_array, likelihood_prediction_incl_similar_array, G_cor] =...
-            testProbabilisticModel(R, G, N, portion_step, @buildUserPrefenceModel,...
+[likelihood_category_prediction_ratec_array, likelihood_prediction_incl_similar_array, G_est, G_cor] =...
+            testProbabilisticModel(R, G_, N, train_parts, test_parts , @buildUserPrefenceModel,...
             @estimateCondititonalPrLikelihood, @estimatePosteriorProbability);
 
-visualizeCategoryPredictionResultsInOnePlot(likelihood_category_prediction_ratec_array, likelihood_prediction_incl_similar_array, portion_step);
+visualizeCategoryPredictionResultsInOnePlot(likelihood_category_prediction_ratec_array{1}, likelihood_prediction_incl_similar_array, train_parts);
 %% Visualize correlation matrix
 % figure, imagesc(G_cor);                                 
 % colorbar;

@@ -15,11 +15,11 @@ function logPr_ItemInCategory = estimateCondititonalPrBernoulli(Pr_UratedC, R)
     logPr_ItemInCategory = zeros(Nitems, Ncategories, Nrates); % allocate memory
     %logPr_ItemInCategory_temp = zeros(Nitems, 1);
     for r = 1:Nrates
-        R_temp = full(R == r);
+        R_temp = (R == r);
         %R_temp_neg = ~R_temp;
         Pr_UratedC_temp = Pr_UratedC(:,:,r);
         for c = 1:Ncategories
-            [r, c]
+            %[r, c]
             %ind = find(G(:,c) ~= 0);
             %ind = 1:Nitems;
 %             for i = 1:Nitems
@@ -57,7 +57,6 @@ function logPr_ItemInCategory = estimateCondititonalPrBernoulli(Pr_UratedC, R)
             %logPr_ItemInCategory(:, c, r) = sum(bsxfun(@times, R_temp, logPr_UratedC_temp(c,:)), 2);
             %logPr_ItemInCategory(:, c, r) = logPr_ItemInCategory_temp;
         end
-    72;    
     end
 
 end
