@@ -109,7 +109,7 @@ end
 [i,j,s] = find(R);
 [m,n] = size(R);
 R_ = sparse(i,j,double(s),m,n);
-N = 5;
+N = 10;
 train_parts = [0.01 0.05:0.05:0.8];
 test_parts = 0.2* ones(1,length(train_parts));
 G_ = bsxfun(@rdivide,G, sum(G')');
