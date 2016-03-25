@@ -4,7 +4,6 @@ function logPr_ItemInCategory = estimateCondititonalPrBernoulli(Pr_UratedC, R)
     Nusers = size(Pr_UratedC, 1);       %number of users
     Ncategories = size(Pr_UratedC, 2);  %number of genres
     Nrates = size(Pr_UratedC, 3);       %number of rates
-    Nusers_quarter = ceil(Nusers/4);
 
     available_memory = 2^20; %30
     

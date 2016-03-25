@@ -5,7 +5,7 @@ function [category_prediction_ratec_array, prediction_incl_similar_array, G_est,
     Nusers = size(R,1);         %number of users
     Nitems = size(R,2);         %number of items
     Ncategories = size(G,2);    %number of genres
-    Nrates = max(max(R));       %number of rates     
+    Nrates = max(max(R))%length(unique(unique(R))) - 1;       %number of rates     
     
     %% Calcuate correlation model
     G_norm = (logical(G) - ones(size(G,1),1) * mean(logical(G)));      % subtract mean
@@ -28,6 +28,8 @@ function [category_prediction_ratec_array, prediction_incl_similar_array, G_est,
         clear correctly_predicted_items;
         G_est = zeros(Nitems, Ncategories);
         counter_similar_prediction = zeros(N, Nrates);
+        maxNumOfGenPerMovies = max(sum((G~=0)'));
+        counter_correct_prediction = zeros(N, Nrates, maxNumOfGenPerMovies);
         for j = 1:N
             j
             training_subset_ind = randperm(Nitems, floor(Nitems * trainingPortion)); % select training samples randomly
@@ -41,8 +43,6 @@ function [category_prediction_ratec_array, prediction_incl_similar_array, G_est,
             G_test = G(testing_subset_ind,:);
             [Pr_Category Pr_UratedC] = buildUserPrefenceModel(R_train, G_train);
 
-            maxNumOfGenPerMovies = max(sum((G~=0)'));
-            counter_correct_prediction(j, 1:Nrates, maxNumOfGenPerMovies) = 0;
             Pr_ItemInCategory = estimateCondititonalProbability(Pr_UratedC, R_test); %164 %175
             Pr_CategoryGivenI = estimatePosteriorProbability(Pr_ItemInCategory, Pr_Category);
             for i = 1:length(testing_subset_ind)
